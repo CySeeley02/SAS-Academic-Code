@@ -1,0 +1,1059 @@
+/* 1a */
+/*This part will create a new table which will be called work.baseball2 and will contain onyl certain columns from sashelp.baseball  */
+proc sql;
+/*This step is creating a table called work.baseball2 which we will add things to  */
+create table work.baseball2 as
+/*This step is identifying what columns we want from sashelp.baseball to include in the new table  */
+select name, team, league, YrMajor, CrAtBat, CrHits, CrHome, CrRuns, CrRbi, CrBB, position, salary
+/*This step is telling sas what table to pull the columns above from  */
+from sashelp.baseball;
+quit;
+
+/* b */
+/*This set of code will add two players (Babe Ruth and Roberto Clemente into our data set with all of our stats) */
+proc sql;
+/*This step will tell sas what table we are looking to insert these new columns into  */
+insert into work.baseball2
+/*This line gives the order/labels in which the new rows will come in so that sas knows where to put what information  */
+(name, team, league, YrMajor, CrAtBat, CrHits, CrHome, CrRuns, CrRbi, CrBB, position)
+/*This command will tell sas what new information is being added to the data set for Babe Ruth based on our previous order  */
+values('Babe Ruth', 'New York', 'American', 22, 8399, 2873, 714, 2174, 2214, 2062, 'LF')
+/*Similarly this code tells sas what new info about Roberto Clemente is being added based on the previous ordering.  */
+values('Roberto Clemente', 'Pittsburgh', 'National', 18, 9454, 3000, 240, 1416, 1305, 621, 'RF');
+/*This simply tells sas to print all of the data in the work.baseball2 set so I can make sure it added our two new players  */
+select * from work.baseball2;
+quit;
+/* c */
+proc sql;
+/*This step is just creating a new table for us to work on named work.baseball2  */
+alter table work.baseball2
+/*This step sets constraints on some of the variables so that they can only be characters or only be typed in a specific way.   */
+modify name char(25), team char(25), league char(20) check(league in ('American', 'National')), YrMajor num check(YrMajor gt 0), CrAtBat num check(CrAtBat gt 0), CrHits num, CrHome num, CrRuns num, CrRbi num, CrBB num, position char(4);
+quit;
+
+/* After testing my three integrity constraints as expected it gave back errors if the constraints were violated such as trying global instead of American/National or trying to leave out a name  */
+
+/* d */
+/*In this step we will be first adding a new column to our table known as modern salary equivalents and then be calculating the modern salary equivalent for each player and adding it into our table  */
+proc sql;
+/*This command tells sas which table we will be altering  */
+alter table work.baseball2
+/*Here we are adding a column to the table and then labeling that column  */
+add modsal num label="Modern Salary Equivalent";
+run; 
+proc sql;
+/*Here we are telling sas what table to update  */
+update work.baseball2
+/*Here we are telling sas what to set the new salaries to based on what position the player plays  */
+set modsal=salary*case 
+when position='1B' or '2B' or '3B' or 'SS' then 6
+when position= 'C' then 5
+when position= 'LF' or 'RF' or 'CF' or 'DH' then 8
+end;
+/*This step simply shows us the new updated table which has modern day salary equivalents  */
+select * from work.baseball2;
+quit;
+
+/*2*/
+/*This code was found on the course webpage and simply inputs the data we will be using for problem 2  */
+DATA CTL2014;
+INFILE CARDS DLM='09'X;
+INPUT Name :$24. Gender $ City :$10. State $ Rating $ RatingDate MMDDYY10. RatingType $;
+CARDS;
+Anderson, Stephen R.	M	Blythewood	SC	4.0	12/31/2015	C
+Bigg, Dave 	M	Lexington	SC	4.0	12/31/2015	C
+Eckstorm, Andy 	M	Columbia	SC	3.5	12/31/2015	C
+Fernandez, Michael 	M	Columbia	SC	3.0	12/31/2014	C
+Feuerstein, Eric 	M	Blythewood	SC	4.0	12/31/2015	C
+Godish, Donald L.	M	Columbia	SC	3.0	12/31/2015	C
+Graybill, Wesley M.	M	Columbia	SC	3.5	12/31/2015	C
+Heath, Jeff 	M	Blythewood	SC	3.5	12/31/2015	C
+Imholz, Mark 	M	Blythewood	SC	4.0	12/31/2015	C
+Kuhn, Stanley 	M	Blythewood	SC	4.0	12/31/2015	C
+Lowery, Mark A.	M	Columbia	SC	3.0	12/31/2015	C
+Mantai, Michael 	M	Lexington	SC	4.0	12/31/2015	C
+May, John 	M	Columbia	SC	4.5	12/31/2015	C
+May, Kenneth Ronald	M	Blythewood	SC	3.0	12/31/2015	C
+McCormick, Ryan S	M	Blythewood	SC	3.5	12/31/2015	C
+Miller, Charles 	M	Columbia	SC	3.0	12/31/2015	C
+Nelson, Derek 	M	Lexington	SC	4.5	12/31/2014	C
+Phillips, Mike 	M	Blythewood	SC	4.0	12/31/2015	C
+Rinehart, Rene P.	M	FPO	AP	4.0	12/31/2015	C
+Siau, Christopher T	M	Columbia	SC	3.5	12/31/2015	C
+Stubblefield, Harry 	M	Lexington	SC	3.0	12/31/2015	C
+Tyson, Craig 	M	Blythewood	SC	4.0	12/31/2015	C
+van der Schyff, Petrus 	M	West Columbia	SC	3.5	12/31/2015	C
+Young, Glenn W	M	Blythewood	SC	4.0	12/31/2015	C
+Aull, Taylor 	M	Columbia	SC	4.5	12/31/2014	C
+Collins, David 	M	Columbia	SC	4.5	12/31/2015	C
+Dieter, Tuck 	M	Pawleys Island	SC	4.5	12/31/2014	C
+Doty, Logan 	M	Columbia	SC	4.0	12/31/2015	C
+Houston, Donovan A.	M	Elgin	SC	4.0	12/31/2015	C
+Keenan, Palmer 	M	Columbia	SC	4.0	12/31/2015	C
+May, John 	M	Columbia	SC	4.5	12/31/2015	C
+Oamil, Billy Lyle 	M	Lexington	SC	4.0	12/31/2015	C
+Price, Russell D.	M	Winnsboro	SC	4.0	12/31/2014	C
+Rowe, Nicholas 	M	Columbia	SC	4.5	12/31/2015	C
+Royce, William 	M	Columbia	SC	4.0	12/31/2015	C
+Slapnik, Michael 	M	Lexington	SC	4.0	12/31/2015	C
+Tiller, Cauthen 	M	Camden	SC	4.5	12/31/2015	C
+Utheim, Keith 	M	Cayce	SC	4.0	12/31/2015	C
+;
+run;
+
+DATA CTL2015;
+INFILE CARDS DLM='09'X;
+INPUT Name :$24. Gender $ City :$10. State $ Rating $ RatingDate MMDDYY10. RatingType $;
+CARDS;
+Anderson, Stephen R.	M	Blythewood	SC	4.0	12/31/2015	C
+Bidwell, Stephen E.	M	Columbia	SC	4.5	12/31/2015	C
+Camps, Juan 	M	Columbia	SC	4.0	12/31/2015	C
+Feuerstein, Eric 	M	Blythewood	SC	4.0	12/31/2015	C
+Hitchcock, David 	M	Columbia	SC	4.0	12/31/2015	C
+Houston, James Philip	M	Elgin	SC	4.0	12/31/2015	C
+Imholz, Mark 	M	Blythewood	SC	4.0	12/31/2015	C
+Junis, Steven 	M	Columbia	SC	4.0	12/31/2015	C
+Kuhn, Stanley 	M	Blythewood	SC	4.0	12/31/2015	C
+Mantai, Michael 	M	Lexington	SC	4.0	12/31/2015	C
+May, John 	M	Columbia	SC	4.5	12/31/2015	C
+Mobley, John T.	M	Columbia	SC	4.0	12/31/2015	C
+Nguyen, Khue D.	M	Columbia	SC	4.0	12/31/2015	C
+Tanner, Mike D	M	Blythewood	SC	4.0	12/31/2015	C
+Truitt, David Newton	M	Columbia	SC	4.0	12/31/2015	C
+Tyson, Craig 	M	Blythewood	SC	4.0	12/31/2015	C
+Young, Glenn W	M	Blythewood	SC	4.0	12/31/2015	C
+Atim, Alexandru Gabriel	M	Columbia	SC	3.0	12/28/2015	S
+Banks, Tymir Rabeen	M	Columbia	SC	3.5	12/31/2015	C
+Barker, Michael Craig	M	Blythewood	SC	3.5	12/31/2015	C
+Best, Curry 	M	Columbia	SC	3.0	12/31/2015	C
+Bower, Andrew 	M	Columbia	SC	3.5	12/31/2015	C
+Bramblett, Justin 	M	Columbia	SC	3.5	12/31/2015	C
+Burchstead, Michael 	M	Columbia	SC	3.5	12/31/2015	C
+Chesoni, Solomon N.	M	Blythewood	SC	3.5	12/31/2015	C
+Daylami, Taylor Francis	M	Columbia	SC	3.0	05/01/2015	S
+DeBorde, Cameron Phillip	M	Columbia	SC	2.5	05/18/2015	S
+Eckstorm, Andy 	M	Columbia	SC	3.5	12/31/2015	C
+Estes, Joey 	M	Columbia	SC	3.5	12/31/2015	C
+Failor, Kellen 	M	Columbia	SC	2.5	06/09/2015	S
+Gillan, Dennis 	M	Blythewood	SC	3.5	12/31/2015	C
+Godish, Donald L.	M	Columbia	SC	3.0	12/31/2015	C
+Graybill, Wesley M.	M	Columbia	SC	3.5	12/31/2015	C
+Hedgepath, Andrew 	M	Columbia	SC	3.0	12/31/2015	C
+Henry, Kenneth 	M	Blythewood	SC	3.5	12/31/2015	A
+Holland, Sam T	M	Columbia	SC	3.5	12/31/2015	C
+Lambe, Scott 	M	Columbia	SC	3.0	12/31/2015	C
+Levinson, Lucky 	M	Columbia	SC	3.5	12/31/2015	C
+LHOSTE-CLOS, MATHIEU 	M	Columbia	SC	3.0	04/30/2015	S
+Lowery, Mark A.	M	Columbia	SC	3.0	12/31/2015	C
+Makris, Thomas Michael	M	Columbia	SC	3.5	12/31/2015	C
+McCormick, Ryan S	M	Blythewood	SC	3.5	12/31/2015	C
+Miller, Charles 	M	Columbia	SC	3.0	12/31/2015	C
+OMalley, Tim 	M	Columbia	SC	3.5	12/31/2015	C
+Pleasant, Mark Durant	M	Columbia	SC	3.0	12/31/2015	C
+Powell, Steven 	M	Columbia	SC	3.0	12/31/2015	C
+Siau, Christopher T	M	Columbia	SC	3.5	12/31/2015	C
+Spong, Trey 	M	Winnsboro	SC	3.5	12/31/2015	C
+Stubblefield, Harry 	M	Lexington	SC	3.0	12/31/2015	C
+Terry, David 	M	Lexington	SC	3.5	12/31/2015	C
+volz, thomas elliott	M	Columbia	SC	3.5	12/31/2015	C
+Waite, John J	M	Columbia	SC	3.0	12/31/2015	C
+Woodcock, Ron J	M	Columbia	SC	3.5	12/31/2015	C
+;
+run;
+/* a */
+/*In this step we will be writing a query which creates a table of only the intersection of the two data sets  */
+proc sql;
+/* This is selecting the columns we need from the 2014 table while also formatting the rating date to a more readale format */
+select Name, Rating, RatingDate format date7. from CTL2014
+/*This tells sas to only keep the parts of the two data sets that are in both data sets in our table  */
+intersect
+/*This step tells sas what data set to compare the first data set to in order to see where they intersect for the table.  */
+select Name, Rating, RatingDate formart date7. from CTL2015;
+run;
+
+
+/* b */
+/*In this step we will be writing a query which creates a table of only the intersection of the two data sets  */
+proc sql;
+/* This is selecting the columns we need from the 2014 table while also formatting the rating date to a more readale format */
+select Name, Rating, RatingDate format date7. from CTL2014
+/*This tells sas to only keep the parts of the two data sets that are in both data sets in our table  */
+intersect
+/*This step tells sas what data set to compare the first data set to in order to see where they intersect for the table.  */
+select Name, Rating, RatingDate formart date7. from CTL2015
+/*This tells sas to put the table in order by rating from highest to lowest.  */
+order by Rating Desc;
+run;
+
+/* c */
+/*In this part we will create a table which contains only those who competed in 2015 and not 2014  */
+proc sql;
+/*This step tells sas what data set to compare the first data set to in order to see where they intersect for the table.  */
+select Name, Rating, RatingDate formart date7. from CTL2015
+/* This step tells sas to omit the people who are also in the 2014 data set when making our new table */
+except
+/* This is selecting the columns we need from the 2014 table while also formatting the rating date to a more readale format */
+select Name, Rating, RatingDate format date7. from CTL2014;
+run;
+
+
+/* d */
+/*In this step we will be creating one big table that contains players who played in 2014, 2015, and both without duplicates  */
+proc sql;
+/* This is selecting the columns we need from the 2014 table while also formatting the rating date to a more readale format */
+select Name, Rating, RatingDate format date7. from CTL2014
+/*The union command will combine the tables and delete duplicate values so there is only one of each name  */
+union
+/* This step tells sas what to union the first data set with to create one big table */
+select Name, Rating, RatingDate format date7. from CTL2015;
+run;
+
+/* e */
+/* In this step we are creating a new table which includes all the players from 2014, 2015 and players who played both as well as duplicates */
+proc sql;
+/* This is selecting the columns we need from the 2014 table while also formatting the rating date to a more readale format */
+select Name, Rating, RatingDate format date7. from CTL2014
+/* This union all command will put the two tables together but now delete duplicates in the process  */
+union all
+/* This step tells sas what to union the first data set with to create one big table */
+select Name, Rating, RatingDate format date7. from CTL2015
+/*This is just to make it a little clearer to see there are duplicates  */
+order by Name;
+run;
+
+/* This was for simplicity in typing but sometimes I dont use it but its still necessary for some of the code */
+data bsbl; set sashelp.baseball; 
+run; 
+
+/* 1a  */ 
+/* This let statement sets up the macro variable named plName and sets it equal to whatever value we want, in this case it is 'Don'  */
+%let plName=Don; 
+/*This title statement sets up our title with the earlier macro variable so that the title is adaptable depending on what we change our macro variable to  */
+title "Players With &plName in Their Names Statistics"; 
+/*invokes proc sql  */
+proc sql; 
+/*This statement selects all of the columns within our data set  */
+select * 
+/*This tells SAS where we are getting our data from which is the sashelp.baseball data set which I renamed as bsbl  */
+from bsbl 
+/*This statement is how we restrict what columns are included within our table and we invoke the macro variable so that only names with our macro variable in them are contained within our table  */
+where Name contains "&plName";  
+run;
+
+/* b */
+
+/*This sets up a macro named descriptstat with three parameters which are statistic, variable, and dataname  */
+%macro descriptstat(statistic, variable, dataname);
+/* invokes proc means */
+proc means
+/*This step invokes two of our macro variables one of which will tell us where the data is coming from and the other will tell us what statistic the user wants both based on the user input  */
+data=&dataname &statistic;
+/*This step invokes our third macro variable which will tell us what variable we want from within our data set based on the user input  */
+var &variable;
+title "The &statistic of &variable from the &dataname data set";
+run;
+/*This simply tells sas that the macro is done  */
+%mend;
+
+/* c */
+
+/*This step invokes the macro we just wrote with the stat being statistic being mean, the variable being hits/nHits, and the data set being bsbl/sashelp.baseball  */
+%descriptstat(Mean,nHits,bsbl)
+/*This step invokes the macro we just wrote with the stat being statistic being sum, the variable being homeruns/nHome, and the data set being bsbl/sashelp.baseball  */
+%descriptstat(sum,nHome,bsbl)
+
+/* d */
+
+/*This step is making a new macro named avgvars  */
+%macro avgvars / parmbuff;
+/*This put statement will print to the log so we have macro variable named syspbuff  */
+%put syspbuff contains: &syspbuff;
+/*This creates a local macro variable named num1 which we will use later  */
+%local num1;
+/*This creates a loop so that it will repeat for as many variables as the user inputs which will be based on the syspbuff macro variable which will be counted by the countw function so it will do 1 to however many that count function counts  */
+%do num1=1 %to %sysfunc(countw(&syspbuff));
+/*This creates another macro variable which will name each statistic we are getting the mean of based on the scan function which will count through the variables and tell sas which variable to get the mean of in each loop  */
+%let vname=%scan(&syspbuff, &num1);
+/*This invokes proc means and tells it to look into the sashelp.baseball data set and that we are looking for only the mean  */
+proc means data=sashelp.baseball mean;
+/*This will tell sas to look for our macro variable to see what variable we are getting the mean of in each sequence of the loop  */
+var &vname;
+run;
+/* This tells sas the loop is done and to potentially start another loop */
+%end;
+/*This tells sas that the macro is done  */
+%mend;
+/*This invokes the new macro with three variables and gives us the mean of these three variables  */
+%avgvars(nHits, nHome, nRBI)
+
+
+
+/* e */
+
+/*This creates a new macro called topguys with 4 positional parameters num, stat, pos, and leag */
+%macro topguys(num, stat, pos, leag);
+/*This invokes proc sql and tells sas we only want the first 4 observations in the output  */
+proc sql outobs=4;
+/*This selects all of the columns and tells sas where our data is coming from which is sashelp.baseball data set  */
+select * from sashelp.baseball
+/*This qualifies what to include in the table based on the user input of position and league  */
+where Position="&pos" and League="&leag"
+/*This orders the table based on the stat the user inputs by descending order so that when we only get the first four obervations they are the highest values of whatever stat the user has input  */
+order by &stat desc;
+run;
+/*This tells sas that the macro is done  */
+%mend;
+
+/* e */
+
+/*This invokes the macro which will get the top 4 1st baseman in the American league in terms of RBI's  */
+%topguys(4,nRBI,1B,American)
+
+/* f */
+
+/* This sets up a new macro which has one positional parameter */
+%macro ite(leagu);
+/* This step is conditional so that if the user wants only American league players they can input American and if they do sas will only run the code below it*/
+%if &leagu=American %then %do;
+/*If the user inputs american as the league then it will title it based on the macro variable which will be American  */
+title " These are American Leaguers";
+/*It will then invoke this proc sql  */
+proc sql;
+/* where it will select all the columns from the sashelp.baseball data set */
+select * from sashelp.baseball
+/*This qualifies the table requirements so that it will only include players in the American league  */
+where League="American";
+run;
+/*This tells sas that the do statement is over  */
+%end;
+/*This is saying if the user does not input 'American' to do what is below rather than the first condition */
+%else %do;
+/*This is just titling it accurately  */
+title "These are National Leaguers";
+/*invokes proc sql  */
+proc sql;
+/* where it will select all the columns from the sashelp.baseball data set */
+select * from sashelp.baseball
+/*This qualifies the table requirements so that it will only include players in the National league  */
+where League="National";
+run;
+/*This is telling sas the do statement is over  */
+%end;
+/*This tells sas the macro is done  */
+%mend;
+
+/*This invokes the macro with both leagues to ensure it works  */
+%ite(American)
+%ite(National)
+
+/* a */
+/* This step is using proc contents which is creating a summary of the contents of the sashelp.us_data set and then naming this output data set as mycontents. The noprint command tells sas not to print the proc contents in the output data  */
+proc contents data=sashelp.us_data out=mycontents noprint; run;
+/* This step is creaitng a new data set named myvars and telling sas to make it the same as mycontents except only keep the NAME and TYPE columns  */
+data myvars; set mycontents(keep=NAME TYPE); run;
+/* this step is creating another new data set named mynumvars and setting it equal to the myvars data set  */
+data mynumvars; set myvars;
+/* This step is setting a condition where we will only keep type=1 data points in our data set for mynumvars */
+IF TYPE=1; 
+/*This step is dropping the type column from our mynumvars data set  */
+drop TYPE;
+/*This is simply telling sas the execute the step  */
+run;
+/* The mynumvars data set contains only the name column for data points that were type=1 from our original sashelp.us_data set */
+/* This just prints the mynumvars data set */
+proc print data=mynumvars;
+
+/* b */
+/* This is creating a macro called dembplot in which there are two parameters */
+%macro dembplot(var,group=);
+/* This is initiating the proc sgplot function and specifying a data set that we are using */
+proc sgplot data=sashelp.us_data;
+/* This is simply titling the boxplot  */
+title "Boxplot of &var";
+/* This is creating box plots based on whatever variable is input and labeling points on the boxplots by statecode and the if then statement tells sas that if the group parameter is not null then to categorize based on the group parameter */
+vbox &var /datalabel=statecode %if &group ne %then %do; category=&group
+/*ending the do loop  */
+%end;
+;
+/*running the proc sgplot  */
+run;
+/* ending the macro */
+%mend;
+
+/* This step is doing data step but telling sas we dont actually want a new data set to be made  */
+data _null_;
+/* This is setting our data set equal to the mynumvars data set */
+set mynumvars;
+/* This is creating a variable named rc and doing a command called dosubl which tell sas to run this as many times as there are variables, the cats command concatinates the dembplot function so that there is no spaces that cause issues and then the NAME variable tells SAS where to look for the things going into the dembplot functions   */
+rc=dosubl(cats('%dembplot(',NAME,')'));
+/* This just executes our data step */
+run;
+
+/* c */
+
+/* This is creating a macro called dembplot in which there are two parameters */
+%macro dembplot(var,group=);
+/* This is initiating the proc sgplot function and specifying a data set that we are using */
+proc sgplot data=sashelp.us_data;
+/* This is simply titling the boxplot  */
+title "Boxplot of &var";
+/* This is creating box plots based on whatever variable is input and labeling points on the boxplots by statecode and the if then statement tells sas that if the group parameter is not null then to categorize based on the group paramete, however I simply added the group=Region so that it does it everytime*/
+vbox &var /group=Region datalabel=statecode %if &group ne %then %do; category=&group
+/*This ends the do loop  */
+%end;
+;
+/*This executes the procsgplot  */
+run;
+/*This ends the macro  */
+%mend;
+
+/* This step is doing data step but telling sas we dont actually want a new data set to be made  */
+data _null_;
+/* This is setting our data set equal to the mynumvars data set */
+set mynumvars;
+/* This is creating a variable named rc and doing a command called dosubl which tell sas to run this as many times as there are variables, the cats command concatinates the dembplot function so that there is no spaces that cause issues and then the NAME variable tells SAS where to look for the things going into the dembplot functions   */
+rc=dosubl(cats('%dembplot(',NAME,')'));
+/*This just executes the data step  */
+run;
+
+/* 2 */
+/*This is just the code you gave us  */
+DATA CTL2014;
+FILENAME webpage URL 'http://people.stat.sc.edu/hitchcock/tennissingleslists.txt';
+INFILE webpage DLM='09'X firstobs=5 obs=42;
+INPUT Name :$24. Gender $ City :$10. State $ Rating $ RatingDate MMDDYY10. RatingType $;
+run;
+
+DATA CTL2015;
+FILENAME webpage2 URL 'http://people.stat.sc.edu/hitchcock/tennissingleslists.txt';
+INFILE webpage2 DLM='09'X firstobs=50 obs=102;
+INPUT Name :$24. Gender $ City :$10. State $ Rating $ RatingDate MMDDYY10. RatingType $;
+run;
+/* a */
+/* This is naming my new data set CTL2015New */
+data CTL2015New;
+/* This is setting my new data set equal to the data set CTL2015 */
+set CTL2015;
+/* This step is saying that if the Rating is equal 4.5 then to create a new variable named NewDate and using the intx() function to tell it to jump the RatingDate ahead 3 weeks based on the parameters I input into the intx() function the same function tells it to go to the same day whatever increment I input away*/
+if Rating=4.5 then NewDate=intnx('week',RatingDate,3,'same');
+/* This step is saying that if the Rating is equal 4.0 then to create a new variable named NewDate and using the intx() function to tell it to jump the RatingDate ahead 4 years based on the parameters I input into the intx() function the same function tells it to go to the same day whatever increment I input away*/
+if Rating=4.0 then NewDate=intnx('year',RatingDate,4,'same');
+/* This step is saying that if the Rating is equal 3.5 then to create a new variable named NewDate and using the intx() function to tell it to jump the RatingDate ahead 10 days based on the parameters I input into the intx() function the same function tells it to go to the same day whatever increment I input away*/
+if Rating=3.5 then NewDate=intnx('day', RatingDate,10,'same');
+/* This step is saying that if the Rating is equal 3.0 then to create a new variable named NewDate and using the intx() function to tell it to decrease the RatingDate ahead 1 month based on the parameters I input into the intx() function the same function tells it to go to the same day whatever increment I input away*/
+if Rating=3.0 then NewDate=intnx('month',RatingDate,-1,'same');
+/* This step is saying that if the Rating is equal 2.5 then to create a new variable named NewDate and using the intx() function to tell it to jump the RatingDate ahead 1 quarter based on the parameters I input into the intx() function except in this one the beginning parameter tells sas to only skip to the beginning of the next qaurter*/
+if Rating=2.5 then NewDate=intnx('quarter',RatingDate,1,'beginning');
+/* This just tells sas to execute the code */
+run;
+/* initiates proc sql  */
+proc sql;
+/* selects only the columns we want to see in the output  */
+select Name, Rating, RatingDate, NewDate
+/* Tells sas where to get the data from  */
+from CTL2015New;
+/* executes the proc sql command  */
+run;
+
+/* b */
+
+/*this creates a new data set named combined  */
+data combined;
+/* This is creating a do loop and variable which will start at 4 and go to 5 */
+do i=4,5;
+/* This is creating a new variable, or two new variables in a sense within a URL because the put statement will put the i's into the URL so that there are two different URL's */
+fname='CTL201'||compress(put(i,1.)||'.txt');
+/* this is telling sas when to do it until which is until the last observation which in this case is 5  */
+do until(lastobs);
+/* This is telling sas to import the files based on the fname which is two different variables in a sense so it will add both of them to the data set based on a tab delimiter,, the missover prevents further inputs until the variables are read in, dsd just says that when variables are in quotes they are characters, and truncover allows for inputs to be less than the specified character values  */
+infile temp filevar=fname end=lastobs dlm='09'X missover dsd truncover;
+/* This is telling sas the name of each variable and some formatting things such as type and length */
+input Name :$24. Gender $ City :$10. State $ Rating $ RatingDate MMDDYY10. RatingType $;
+/* 	The output command writes our previous code into a data set   */
+	  output;
+/* This ends the do statement  */
+end;
+/* This ends the inner do statement */
+end;
+/* This is telling sas to stop the loop */
+stop;
+/* This just executes everything we wrote before */
+run;
+
+
+/* c */
+/* This is code you gave us */
+DATA CTL2015more;
+FILENAME webpage3 URL 'http://people.stat.sc.edu/hitchcock/tennissinglesmore.txt';
+INFILE webpage3 DLM='09'X;
+INPUT Name :$24. Gender $ City :$10. State $ Rating $ RatingDate MMDDYY10. RatingType $ MatchWins MatchLosses GameWins GameLosses;
+run;
+
+/* This is creating a new data set */
+data newCTL2015more;
+/* This is telling sas to set it equal to the data set you gave us */
+set CTL2015more;
+/* This is creating a new variable called GameWinPct based on variables from our data set */
+GameWinPCT=100*(GameWins/(GameWins+GameLosses));
+/* This is creating a new variable called MatchWinPct based on variables from our data set */
+MatchWinPct= 100*(MatchWins/(MatchWins+MatchLosses));
+/* This is creating a new variable called TotalMatch based on variables from our data set */
+TotalMatches=MatchWins+MatchLosses;
+/*This executes our data step  */
+run;
+/* This initiates proc sql */
+proc sql;
+/*This is selecting all of the columns from my newly made data set and prints it  */
+select * from newCTL2015more;
+/* This executes the proc sql */
+run;
+
+/* d */
+/* This initiates proc sqplot and tells sas what data we are using */
+proc sgplot data=newCTL2015more;
+/* This tells sas to create a vertical bar chart that is divided up based on rating and the response variable will be the sum of the total matches per rating */
+vbar Rating / response=TotalMatches;
+/* This executes the proc sgplot we just wrote */
+run;
+
+/* e */
+
+/* This initiates proc sgpanel and tells sas what data set to us */
+proc sgpanel data=newCTL2015more;
+/* This tells sas to make each panel by the different ratings and the novarname just tells sas we dont need anything there  */
+panelby Rating / novarname;
+/*The loess function creates a scatter plot but puts a estimation line of best fit over it and then I specify the x and y variables on the scatterplot  */
+/* If I am misunderstanding the loess function and it is not a scatter plot then please refer to the commented code below in place of it */
+/* scatter x=GameWinPct y=MatchWinPct;  */
+loess x=GameWinPct y=MatchWinPct;
+/* This executes our proc sgpanel */
+run;
+/* For a 3.5 rated player who wins 60% of his games you would expect him to win roughly 60-65% of his matches */
+
+DATA CTL2015more;
+FILENAME webpage3 URL 'http://people.stat.sc.edu/hitchcock/tennissinglesmore.txt';
+INFILE webpage3 DLM='09'X;
+INPUT Name :$24. Gender $ City :$10. State $ Rating RatingDate MMDDYY10. RatingType $ MatchWins MatchLosses GameWins GameLosses;
+run;
+
+/* a */
+/* Initiates data step and names new data set CTL2 */
+data CTL2;
+/* This sets our new data step equal to CTL2015more which you gave to us */
+set CTL2015more;
+/* This creates a new calculated column for our data set based on variables within the data set */
+GameWinPct= 100*(GameWins/(GameWins+GameLosses));
+/* This creates a new calculated column for our data set based on variables within the data set */
+MatchWinPct= 100*(MatchWins/(MatchWins+MatchLosses));
+/* This tells sas to execute the data statement */
+run;
+
+/* b */
+/*Initiates proc format  */
+proc format;
+/* Creates an informat for these values which will be useful later since decimal points can't be used for array columns   */
+invalue newrating 2.5=1 3=2 3.5=3 4=4 4.5=5;
+/*This executes our proc format statement  */
+run;
+/* Initiates a data step and names it RA2016 */
+data RA2016;
+/* Sets our new data set equal to CTL2015more data set */
+set CTL2015more;
+/* Initiates an array named NewR which has 7 rows and 5 columns, 7 rows because the rows are Match wins and there are between 0 and 7 match wins in our data set   */
+/* The 0 to 5 columns come from our unadjusted ratings which go from 2.5 to 4.5 by .5 but we cannot use decimals in our column values so we change it to 1 through 5 by doing an informat, the _temporary_ tells SAS that this is temporary array  */
+array NewR {0:7,1:5} _temporary_
+/* These values within our array are the adjusted ratings for each match win by original rating scenario so these will tell SAS what to put as the adjusted rating later on         */
+        (2 2.5 3 3.5 4
+         2 2.5 3 3.5 4
+         2.5 3 3.5 4 4.5
+         2.5 3 3.5 4 4.5
+         2.5 3 3.5 4 4.5
+         2.5 3 3.5 4 4.5
+         3 3.5 4 4.5 5
+         3 3.5 4 4.5 5);
+/* This tells SAS how to calculate our adjusted rating by looking into the array at the different rows and columns based on MatchWins and old rating, the input the statement is because we are using an informat for the old Rating so this allows SAS to convert it to look into both the array and table */
+Rating2016=NewR(MatchWins,input(Rating,newrating.));
+/* This initiates proc print and tells SAS what data set to use  */
+proc print data=RA2016;
+/*This tells SAS what variables to print in our output  */
+var Name Rating MatchWins Rating2016;
+/* This executes our data step  */
+run;
+
+
+/* c */
+/*This initiates proc format  */
+proc format;
+/*This tells SAS that it is a pictue format and the name is PlayLab  */
+picture PlayLab 
+/* These next 5 lines are the different formats based on the different Ratings, the 0.00 tells sas to do a 4 character two decimal place format for the rating and then title of the player after that will be printed to say what kind of player it is  */
+2.5='0.00 Beginner'
+3='0.00 Learning Player'
+3.5='0.00 Intermediate Player'
+4='0.00 Skilled Player'
+4.5='0.00 Top Player';
+/*This initiates proc print and tells SAS we are using the CTL2 data set  */
+proc print data=CTL2;
+/*This tells SAS what variables to print  */
+var Name Rating;
+/* This tells SAS that for the rating variable, we will be using the new PlayLab format*/
+format Rating PlayLab.;
+/* This executes the proc print */
+run;
+
+/* d */
+/*This initiates proc format  */
+proc format;
+/* This tells SAS we are doing a picture format and that it will be named PCTForm */
+picture PCTForm
+/* This is telling SAS for values 0-50 to format their Match win percentage as 5 characters with two decimals add the label less succesful player. in this case we use 9's because it will print the match win percentages as 0's instead of just leaving these values blank */
+0-50='99.99% Less Succesful Player'
+/* This is telling SAS for values 51 to our highest value to format the match win percentage as 5-6 characters with two after the decimal as well as add the label succesful player onto it. here we use 00.00 because we do not have 0's that need to be printed but 9's would also work */
+51-high='000.00% Succesful Player';
+/*This initiates proc print and tells SAS we are using the CTL2 data set  */
+proc print data=CTL2;
+/*This tells SAS what variables to pull from the data set  */
+var Name MatchWinPct;
+/* This tells SAS to format our Match Win perecentage in the the new format we created in an earlier step known as PCTForm */
+format MatchWinPct PCTForm.;
+/* This executes our proc print step */
+run;
+
+/* e */
+/* This initiates proc format */
+proc format;
+/* This tells SAS we are making a picture format and naming it dateform   */
+  picture dateform 
+/* This tells SAS that from our lowest value to our highest value we will format in a way where %B means it will use full month names, %e will give the day number without a leading 0 for single digits, and %Y gives the year with the century, we also add a lot of trailing spaces to give room so the dates don't get truncated   */
+   low-high = '%B %e, %Y                   '
+/*      This tells SAS the data type of the column is a date so it correctly formats it in the way we want or converts it to the format we want          */
+              (datatype=date)
+  ;
+/*This initiates proc print and tells SAS we will be using the data set CTL2  */
+proc print data=CTL2;
+/*This tells SAS what variables we want to put in our output  */
+var Name RatingDate;
+/* This tells SAS to format our Rating Dates in the way which we just created called dateform */
+format RatingDate dateform.;
+/* This executes our proc print step */
+run;
+
+/* a */
+/* This initiates proc sql */
+proc sql;
+/* This tells SAS to only include one row/column in our output that being the mean of the homeruns column and give it a label */
+select mean(nHome) label='Population Mean Homeruns'
+/* This tells SAS what data set to look for the columns in   */
+from sashelp.baseball;
+/* This executes the proc sql */
+run;
+
+/* mean=11.10 */
+
+/* b */
+/* This creates and names a new data set */
+data fiftyodd;
+/* This tells SAS to count by two starting at 1 until it gets to 99 in a data set to be named later to create our new data set */
+do obsnum=1 to 99 by 2;
+/* This tells SAS what data set to do the counting in as well as how to tell what points to include with the point= statement    */
+   set sashelp.baseball point=obsnum;
+/*   This simply tells SAS to send this data we've been counting to an output  */
+   output;
+/* This ends our do loop */
+end;
+/* This tells SAS to stop the loop so it doesn't go infinitely */
+stop;
+/* This executes our data step */
+run;
+/* This initiates proc sql */
+proc sql;
+/* This selects a column from a data set to be named later and tells SAS to calculate the mean for that column*/
+select mean(nHome) label='Selected Population Mean Homeruns'
+/* This tells SAS where to get our data from */
+from fiftyodd;
+/* This executes our proc sql */
+run;
+
+/* c */
+/*This creates new data set named fiftyeven  */
+data fiftyeven;
+/* This tells SAS to count obersvations starting at two until one hundred by two */
+do obsnum=2 to 100 by 2;
+/* This tells SAS to look into the baseball data set to do the counting and to look at the points based on the obsnum variable we made earlier    */
+   set sashelp.baseball point=obsnum;
+/*  This tells SAS to write the observations to our output   */
+   output;
+/* This ends the do loop */
+end;
+/* This prevents SAS from looping infinitely */
+stop;
+/* This executes our data step */
+run;
+/*This initiates proc sql  */
+proc sql;
+/* This selects a column from a data set to be named later and tells SAS to calculate the mean for that column*/
+select mean(nHome) label='Selected Population Mean Homeruns'
+/* This tells SAS where to look to get the columns and calculate the mean */
+from fiftyeven;
+/* This executes the proc sql */
+run;
+
+/* d */
+/* This creates a new data set called randsamp*/
+data randsamp;
+/* This defines our sample size */
+samplesize=50;
+/* This tells SAS to create a do loop and do this process for the amount of our sample size */
+do i=1 to samplesize;
+/* This creates an obsnum variable and tells SAS that it is equal at most to a random uniform distrbution times the total number of observations   */
+  obsnum=ceil(ranuni(0)*totobs);
+/*  This tells SAS to look into the baseball data set for these points which are the i's or 1-50 random observations pulled out and that the number of observations is totobs  */
+  set sashelp.baseball point=obsnum nobs=totobs;
+/*  This tells SAS to write these points to our output  */
+  output;
+/*This ends our do loop  */
+end;
+/*This stops an infinite do loop from happening  */
+stop;
+/*This executes our data step  */
+run;
+/* This initiates proc sql */
+proc sql;
+/* This selects the nHome column from our data set and finds the mean of it and labels it */
+select mean(nHome) label='Randomly Selected Population Mean Homeruns'
+/* This tells sas what data set to look into */
+from randsamp;
+/*This tells sas to execute the proc sql  */
+run;
+
+/* e */
+/* This creates a macro named meanmac */
+%macro meanmac;
+/* This creates a new data set called multrand*/
+data multrand;
+/* This defines our sample size */
+samplesize=50;
+/* This tells SAS to create a do loop and do this process for the amount of our sample size */
+do i=1 to samplesize;
+/* This creates an obsnum variable and tells SAS that it is equal at most to a random uniform distrbution times the total number of observations   */
+  obsnum=ceil(ranuni(0)*totobs);
+/*  This tells SAS to look into the baseball data set for these points which are the i's or 1-50 random observations pulled out and that the number of observations is totobs  */
+  set sashelp.baseball point=obsnum nobs=totobs;
+/*  This tells SAS to write these points to our output  */
+  output;
+/*This ends our do loop  */
+end;
+/*This stops an infinite do loop from happening  */
+stop;
+/*This executes our data step  */
+run;
+/* This initiates proc sql */
+proc sql;
+/* This selects the nHome column from our data set and finds the mean of it and labels it */
+select mean(nHome) label='Randomly Selected Population Mean Homeruns'
+/* This tells sas what data set to look into */
+from multrand;
+/*This tells sas to execute the proc sql  */
+run;
+/* This mends our macro telling SAS this is the whole macro */
+%mend;
+/*This is running the macro 10 times to get ten sample means  */
+%meanmac;
+%meanmac;
+%meanmac;
+%meanmac;
+%meanmac;
+%meanmac;
+%meanmac;
+%meanmac;
+%meanmac;
+%meanmac;
+
+/* sample values (10.52, 8.7, 12.12, 10.08, 11.96, 14.72, 10.68, 11.6, 10.58, 12.36) mean=11.332 */
+
+/* f */
+/* This creates a new data set called nonrep and tells SAS to drop each observation it checks after it checks it from the number of the sample size */
+data nonrep (drop=obsleft samplesize);
+/* This defines our sample size */
+samplesize=50;
+/*This sets the original obsleft equal to the total number of observations   */
+obsleft=totobs;
+/* This sets up a do loop that will run while the sample size is greater than 0 */
+do while (samplesize>0); 
+/* This will add one to our obsnum each time the loop runs    */
+   obsnum+1;
+/* This sets up a conditional where it will only run the code if samplesize/obsleft is greater than our random uniform 0   */
+  if ranuni(0)<samplesize/obsleft then do;
+/*   This tells SAS to look within the baseball data set and to write the obsnum to our data set and that n number of observations will be total number of observations    */
+     set sashelp.baseball point=obsnum nobs=totobs;
+/*   This tells SAS to write each point to our output    */
+     output;
+/*    This tells SAS to decrease our sample size by 1 so that we will eventually stop running the loop after 50 observations   */
+     samplesize=samplesize-1;
+/* This ends the inner do loop    */
+   end;
+/* This decreases the obsleft by 1 so eventually it will be at 0 to tell SAS to stop running then    */
+   obsleft=obsleft-1;
+/*This ends the outer do loop  */
+end;
+/* This prevents an infinite loop */
+stop;
+/* This executes the data step */
+run;
+/*This initiates proc sql  */
+proc sql;
+/* This selects a column from a data set to be named later and tells SAS to find the mean of that column as well as label it */
+select mean(nHome) label='Randomly Selected Population Mean Homeruns Without Replacement'
+/* This tells SAS where to get the data from */
+from nonrep;
+/* This executes the proc sql */
+run;
+
+/* g */
+/* This creates a macro called tennonrep */
+%macro tennonrep;
+/* This creates a new data set called nonrep2 and tells SAS to drop each observation it checks after it checks it from the number of the sample size */
+data nonrep2 (drop=obsleft samplesize);
+/* This defines our sample size */
+samplesize=50;
+/*This sets the original obsleft equal to the total number of observations   */
+obsleft=totobs;
+/* This sets up a do loop that will run while the sample size is greater than 0 */
+do while (samplesize>0); 
+/* This will add one to our obsnum each time the loop runs    */
+   obsnum+1;
+/* This sets up a conditional where it will only run the code if samplesize/obsleft is greater than our random uniform 0   */
+  if ranuni(0)<samplesize/obsleft then do;
+/*   This tells SAS to look within the baseball data set and to write the obsnum to our data set and that n number of observations will be total number of observations    */
+     set sashelp.baseball point=obsnum nobs=totobs;
+/*   This tells SAS to write each point to our output    */
+     output;
+/*    This tells SAS to decrease our sample size by 1 so that we will eventually stop running the loop after 50 observations   */
+     samplesize=samplesize-1;
+/* This ends the inner do loop    */
+   end;
+/* This decreases the obsleft by 1 so eventually it will be at 0 to tell SAS to stop running then    */
+   obsleft=obsleft-1;
+/*This ends the outer do loop  */
+end;
+/* This prevents an infinite loop */
+stop;
+/* This executes the data step */
+run;
+/*This initiates proc sql  */
+proc sql;
+/* This selects a column from a data set to be named later and tells SAS to find the mean of that column as well as label it */
+select mean(nHome) label='Randomly Selected Population Mean Homeruns Without Replacement'
+/* This tells SAS where to get the data from */
+from nonrep2;
+/* This executes the proc sql */
+run;
+/* This tells SAS this is the whole macro */
+%mend;
+/* This performs the macro ten times to get 10 means */
+%tennonrep;
+%tennonrep;
+%tennonrep;
+%tennonrep;
+%tennonrep;
+%tennonrep;
+%tennonrep;
+%tennonrep;
+%tennonrep;
+%tennonrep;
+
+/* sample values (10.42, 11.28, 11.36, 12.14, 10.78, 8.6, 10.58, 11.42. 10.82, 11.96) mean=10.936 */
+
+/* h */
+
+/* the set of sample means from part g which is sampling ten times without replacement is closer to the original population mean found in part a */
+
+/* 2 */
+/*This code was given to us by you  */
+proc sort data=sashelp.zipcode nodupkey out=mycities;  /* Keeping only unique city-state observations */
+by statecode city;
+run;
+
+/* a */
+/*This tells SAS to create a new data set named mostvow  */
+data mostvow;
+/*This tells SAS to set it equal to the mycities data set  */
+set mycities;
+/* This creates a new variable and tells SAS to look into the city column and count anytime it sees aeiou and i tells SAS to ignore case */
+num_vowels=countc(City,'aeiou', 'i');
+/*  This counts the total length of the city name and creates a variable with this number*/
+numchar=length(City);
+/*This takes our two previously created variables and makes them into a proportion as a new variable  */
+prop=num_vowels/numchar; 
+/* This just labels our new variable */
+LABEL prop = 'Proportion of vowels in the City Name';
+/*This executes the data step  */
+run;
+/* This sorts the data set and renames it in the output */
+proc sort data=mostvow out=cities_v; 
+/*This tells SAS to sort it by largest to smallest based on the proportion  */
+BY DESCENDING prop; 
+/* This executes the proc sort */
+run;
+/* This initiates proc print and tells SAS what data to use as well as how many obsverations to include and what to label it */
+proc print data=cities_v (OBS=50) label;
+/* This tells SAS what variables to include in the output */
+VAR City statecode prop;
+/* This executes the proc print */
+run;
+
+/* b */
+/*This tells SAS to create a new data set named mostvow  */
+data leastvow;
+/*This tells SAS to set it equal to the mycities data set  */
+set mycities;
+/* This creates a new variable and tells SAS to look into the city column and count anytime it sees aeiou and i tells SAS to ignore case */
+num_vowels2=countc(City,'aeiou', 'i');
+/*  This counts the total length of the city name and creates a variable with this number*/
+numchar2=length(City);
+/*This takes our two previously created variables and makes them into a proportion as a new variable  */
+prop2=num_vowels/numchar; 
+/* This just labels our new variable */
+LABEL prop = 'Proportion of vowels in the City Name';
+/*This executes the data step  */
+run;
+/* This sorts the data set and renames it in the output */
+proc sort data=mostvow out=cities_v; 
+/*This tells SAS to sort it by smallest to largest based on the proportion  */
+BY prop; 
+/* This executes the proc sort */
+run;
+/* This initiates proc print and tells SAS what data to use as well as how many obsverations to include and what to label it */
+proc print data=cities_v (OBS=50) label;
+/* This tells SAS what variables to include in the output */
+VAR City statecode prop;
+/* This executes the proc print */
+run;
+
+/* c */
+/* This creates a new data set named stinci */
+data stinci;
+/*This sets it equal to the data set mycities  */
+set mycities;
+/* This creates a variable which uses the upcase command to ignore case, and tells SAS to find every time in our data set that the state code is also in the city name  */
+BasePos=find(upcase(City),upcase(Statecode));
+if BasePos gt 0;
+/* This executes the data step */
+run;
+/* This initiates proc print */
+proc print;
+/*This tells SAS what variables to include  */
+var city statecode BasePos;
+/* This executes proc print */
+run;
+
+/* d */
+/* This creates a new data set called abcount */
+data abcount;
+/* This sets it equal to the data set mycities */
+set mycities;
+/* This creates a new variable named numtim and countc tells SAS to count the number of times the statecode appears in the city name and i tells SAS to ignore case of the letters */
+numtim=count(City,Statecode, 'i'); 
+/* This just labels our new variable */
+LABEL numtim = 'Number of Times Statecode Appears in the City Name';
+/* This executes the data step */
+run;
+/*This initiates proc sort and tells sas what data to use  */
+proc sort data=abcount;
+/* This sorts the data based on our variable numtim by descending order */
+by descending numtim;
+/* This executes the proc sort */
+run;
+/* This initiates proc print and tells sas to look at the abcount data and only include the first 15 obersvations which will be the 15 largest since we just sorted the data */
+proc print data=abcount (obs=15);
+/*This tells SAS what variables to include in our output  */
+var City Statecode numtim;
+/*This executes our proc print step  */
+run;
+
+/* 1  */
+/* a */
+/* This creates a new data set named newbsbl */
+data newbsbl;
+/* This sets newbsbl equal to the sas help baseball data set */
+set sashelp.baseball;
+/* This tells SAS that if position is equal to any of these positions, make a new variable called playertype and make it infielder */
+if Position in ('1B','2B','3B','SS') then playertype='Infielder';
+/* This tells SAS that if position is equal to any of these positions, make a new variable called playertype and make it outfielder */
+else if Position in ('OF','LF','RF','CF') then playertype='Outfielder';
+/* This tells SAS that if the position is not equal to any of the positions named above, make a new variable called playertype and make it other */
+else playertype='Other';
+/* This executes the data step */
+run;
+/* This initiates proc sql */
+proc sql;
+/* This tells sas to include the name and playertype columns in our output */
+select name, playertype
+/* This tells SAS where to get this data from */
+from newbsbl;
+/*This executes the proc sql  */
+run;
+
+/* This is not ideal because it cuts off part of the outfielder in the playertype column */
+
+/* b */
+/* This creates a new data set named newbsbl1 */
+data newbsbl1;
+/* This tells SAS that the value of playertype should have a character length of 10 so the whole word fits */
+length playertype $10;
+/* This sets newbsbl equal to the sas help baseball data set */
+set sashelp.baseball;
+/* This tells SAS that if position is equal to any of these positions, make a new variable called playertype and make it infielder */
+if Position in ('1B','2B','3B','SS') then playertype='Infielder';
+/* This tells SAS that if position is equal to any of these positions, make a new variable called playertype and make it outfielder */
+else if Position in ('OF','LF','RF','CF') then playertype='Outfielder';
+/* This tells SAS that if the position is not equal to any of the positions named above, make a new variable called playertype and make it other */
+else playertype='Other';
+/* This executes the data step */
+run;
+/* This initiates proc sql */
+proc sql;
+/* This tells sas to include the name and playertype columns in our output */
+select name, playertype
+/* This tells SAS where to get this data from */
+from newbsbl1;
+/*This executes the proc sql  */
+run;
+
+/* Now the whole word outfielder fits within the column instead of it cutting off at 8 characters */
+
+/* 2a */
+/* This creates a new data set named bsbl2 */
+data bsbl2;
+/* This sets our new data set equal to the sashelp baseball data set */
+set sashelp.baseball;
+/* This creates a new variable in bsbl2 batavg which is nHits/nAtbats for every person in the data set */
+BatAvg=nHits/nAtbat;
+/* This executes our data step */
+run;
+/* This step initiates proc means and tells SAS we will be using the bsbl2 data set and only looking for the mean */
+proc means data=bsbl2 mean;
+/*This tells sas what variable within the data set we will be looking for the mean of  */
+var BatAvg;
+/* This executes our proc means step */
+run;
+
+/* b */
+/* This creates a new data set called bsbl3 */
+data bsbl3;
+/* This tells SAS that the length of the variable batavg should be truncated at 3 as a numeric variable */
+length BatAvg1 3.;
+/* This sets our new data set equal to the sashelp baseball set */
+set sashelp.baseball;
+/* This creates a new variable in bsbl3 batavg which is nHits/nAtbats for every person in the data set */
+BatAvg1=nHits/nAtbat;
+/*This executes our data step  */
+run;
+/* This step initiates proc means and tells SAS we will be using the bsbl3 data set and only looking for the mean */
+proc means data=bsbl3 mean;
+/*This tells sas what variable within the data set we will be looking for the mean of  */
+var BatAvg1;
+/* This executes our proc means step */
+run;
+
+/* With these two different approaches, there is a very slight difference in the means as one is .2608303 and one is .2608051 but it would not be noticeable if you stopped the average at the normal 3 places after the decimal. The other difference is in batavg1 the values are tuncated after 3 characters and in batavg it is the default 8 characters which creates the slight difference in mean */
