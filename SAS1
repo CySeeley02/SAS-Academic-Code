@@ -1,0 +1,954 @@
+/* 2) */
+libname HOMEWORK base "/home/u62640447/STA6033";
+run;
+proc contents data=HOMEWORK;
+run;
+/* Right now there are no data files in the library work */
+
+/* 3) */
+
+proc import
+datafile="/home/u62640447/my_shared_file_links/u61801247/data/np_info.xlsx"
+out=Homework.species
+dbms = xlsx
+replace;
+run;
+
+/* 4) */
+
+proc contents
+data = homework.species;
+run;
+/* There is 56 observations with 6 variables and 3 numeric variables */
+
+/* 1 */
+proc import
+datafile="/home/u62640447/my_shared_file_links/u61801247/data/np_traffic.csv"
+out=homework.traffic
+dbms=csv
+replace;
+run;
+/* There is 7 columns, 5 of which are character columns, one is a numeric date, and one is numeric */
+
+/* 2 */
+proc contents 
+data=homework.traffic;
+run;
+
+/* 3 */
+/* There is 5 character variables */
+
+/* 1 */
+libname DATA base "/home/u62640447/my_shared_file_links/u61801247/data";
+run;
+
+/* 2 */
+proc contents 
+data = data.class_new;
+run;
+/* There are 5 variables */
+
+/* b */
+/* There are three observations with 5 variables each. */
+
+/* 2 */
+options validvarname=v7;
+run;
+
+/* 3 */
+libname CLASS xlsx "/home/u62640447/my_shared_file_links/u61801247/data/class.xlsx";
+run;
+
+/* 5 */
+proc contents
+data=class.class_teachers;
+run;
+
+/* 6 */
+libname CLASS clear;
+run;
+
+/* 1 */
+/* This step creates a library named HW2 and tells SAS where to find the contents of this library and the engine on which to set up the library */
+libname HW2 base "/home/u62640447/my_shared_file_links/u61801247/data";
+/* This executes the previous step */
+run;
+
+/* 2 */
+/* This prints out the first 20 observations from the NP_SUMMARY table in the HW2 library   */
+proc print data=HW2.NP_SUMMARY (obs=20);
+/* This executes the previous step */
+run;
+
+/* 3 */
+/* This prints out the first 20 observations from the NP_SUMMARY table in the HW2 library   */
+proc print data=HW2.NP_SUMMARY (obs=20);
+/* This tells SAS which variables to print in this case, Reg, Type, ParkName, DayVisits, TentCampers, and RVCampers */
+var Reg Type ParkName DayVisits TentCampers RVCampers;
+run;
+
+/* 4 */
+/* This tells SAS to print out a general summary of statistics for the data set NP_SUMMARY */
+proc means data=HW2.NP_SUMMARY;
+/* This tells SAS which variables to find this summary for in this case DayVisits, TentCampers, and RVCampers */
+var DayVisits TentCampers RVCampers;
+/* This step executes the proc means  */
+run;
+/*The minimum value for tent campers is 0  */
+/*This is not unexpected because there is multiple values of 0 for tent campers within the first 20 observations  */
+
+/* 5 */
+/* This step provides a more advanced summary of statistics for the NP_SUMMARY data set */
+proc univariate data=HW2.NP_SUMMARY;
+/* This tells SAS which variables to find this summary for in this case DayVisits, TentCampers, and RVCampers */
+var DayVisits TentCampers RVCampers;
+/* This executes the proc univariate step */
+run;
+/* There is not any negative values. */
+
+/* 6 */
+/* This tells SAS that we will be making frequency tables about the NP_SUMMARY data */
+proc freq data=HW2.NP_SUMMARY;
+/* This tells SAS what variables to make frequency tables of */
+table reg type;
+/* This executes the proc freq step */
+run;
+/* There are no lower case codes */
+/* NC has one observation for region codes, and NPRE and RIVERWAYS have one observation for types.  */
+
+/* 1 */
+proc print data=HW2.NP_SUMMARY;
+where parkname contains "Preserve";
+run;
+
+/* 2 */
+/* Region codes A, IM, MW, PW, SE all contain park names that contain the word preserve */
+
+/* 1 */
+proc print data=HW2.eu_occ;
+where Country in ('Bulgaria', 'Matlta');
+run;
+/* There is 165 rows */
+
+/* 2 */
+proc print data=HW2.eu_occ;
+where Hotel > 1000000 and ShortStay < 60000;
+run;
+/* There are 1671 rows with these distinctions */
+
+/* 3 */
+proc print data=HW2.eu_occ;
+where Hotel is missing and ShortStay is missing and camp is missing;
+run;
+/* There are 101 rows with these distinctions */
+
+/* 1 */
+proc print data=HW2.NP_SUMMARY;
+var DayVisits TentCampers RVCampers;
+where Dayvisits ge 300000 and Reg='IM';
+run;
+
+/* 2 */
+/* There is 24 observations listed */
+
+/* 3 */
+%let Visits=DayVisits ge 300000;
+%let Region=Reg='IM';
+
+/* 4 */
+proc print data=HW2.NP_SUMMARY;
+var DayVisits TentCampers RVCampers;
+where &Visits and &Region;
+run;
+
+/* 5 */
+%let Visits=DayVisits ge 500000;
+%let Region=Reg='SE';
+proc print data=HW2.NP_SUMMARY;
+var DayVisits TentCampers RVCampers;
+where &Visits and &Region;
+run;
+/* There is 11 observations with these distinctions */
+
+/* 1 */
+proc print data=HW2.Stocks;
+run;
+
+/* 2 */
+proc print data=HW2.STOCKS;
+format Open High Low Close dollar6.2;
+format Volume comma18.0;
+RUN;
+
+/* 1 */
+proc sort data=HW2.NP_SUMMARY out=NP_SORT;
+by _ALL_;
+run;
+
+/* 2 */
+proc sort data=HW2.NP_SUMMARY out=NP_SORT;
+by Reg descending ParkName descending DayVisits;
+run;
+
+/* 3 */
+proc sort data=HW2.NP_SUMMARY out=NP_SORT;
+by Reg descending ParkName descending DayVisits;
+where Type="NP";
+run;
+
+/* 1 */
+/* It looks like there is some duplicate rows. */
+
+/* 2 */
+proc sort data=HW2.NP_LargeParks out=park_clean
+NODUPKEY DUPOUT=park_dups;
+by _ALL_;
+run;
+
+/* 3 */
+/* There were 30 duplicate observations that were removed */
+
+/* 1 */
+%let path=/home/u62640447/my_shared_file_links/u61801247/data;
+libname HW3 base "&path";
+run;
+
+/* 2 */
+data eu_occ2016;
+set HW3.eu_occ;
+run;
+
+/* 3 */
+data eu_occ2016;
+set HW3.eu_occ;
+where YearMon like '2016%';
+run;
+
+/* 4 */
+data eu_occ2016;
+set HW3.eu_occ;
+where YearMon like '2016%';
+format Hotel ShortStay Camp comma17.;
+run;
+
+/* 5 */
+data eu_occ2016;
+set HW3.eu_occ;
+where YearMon like '2016%';
+format Hotel ShortStay Camp comma17.;
+drop Geo;
+run;
+
+/* 6 */
+/* There is 348 rows with these restrictions. */
+
+/* 1 */
+data fox;
+set HW3.np_species;
+run;
+
+/* 2 */
+data fox;
+set HW3.np_species;
+where Category='Mammal' and Common_Names like '%Fox%';
+run;
+
+/* 3 */
+data fox;
+set HW3.np_species;
+where Category='Mammal' and Common_Names like '%Fox%';
+drop Category Record_Status Occurrence Nativeness;
+run;
+
+/* 4 */
+/*There are 21 rows with these distinctions  */
+
+/* 1 */
+data np_summary_update;
+set HW3.np_summary;
+run;
+
+/* 2 */
+data np_summary_update;
+set HW3.np_summary;
+SqMiles = Acres*.0015625;
+run;
+
+/* 3 */
+data np_summary_update;
+set HW3.np_summary;
+SqMiles = Acres*.0015625;
+Camping = sum(OtherCamping, TentCampers, RVCampers, BackcountryCampers);
+run;
+
+/* 4 */
+data np_summary_update;
+set HW3.np_summary;
+SqMiles = Acres*.0015625;
+Camping = sum(OtherCamping, TentCampers, RVCampers, BackcountryCampers);
+format SqMiles Camping comma17.;
+run;
+
+/* 5 */
+data np_summary_update;
+set HW3.np_summary;
+SqMiles = Acres*.0015625;
+Camping = sum(OtherCamping, TentCampers, RVCampers, BackcountryCampers);
+format SqMiles Camping comma17.;
+keep Reg ParkName DayVisits OtherLodging Acres SqMiles Camping;
+run;
+
+/* 6 */
+/* There are 135 rows with these distinctions */
+
+/* 1 */
+data eu_occ_total;
+set HW3.eu_occ;
+run;
+
+/* 2 */
+data eu_occ_total;
+set HW3.eu_occ;
+Year = substr(YearMon,1,4);
+Month = substr(YearMon,6);
+ReportDate = mdy(Month, 1, Year);
+Total = sum(Hotel, ShortStay, Camp);
+run;
+
+/* 3 */
+data eu_occ_total;
+set HW3.eu_occ;
+Year = substr(YearMon,1,4);
+Month = substr(YearMon,6);
+ReportDate = mdy(Month, 1, Year);
+Total = sum(Hotel, ShortStay, Camp);
+format Hotel ShortStay Camp Total comma17.;
+run;
+
+/* 4 */
+data eu_occ_total;
+set HW3.eu_occ;
+Year = substr(YearMon,1,4);
+Month = substr(YearMon,6);
+ReportDate = mdy(Month, 1, Year);
+Total = sum(Hotel, ShortStay, Camp);
+format Hotel ShortStay Camp Total comma17.;
+format ReportDate monyy7.;
+run;
+
+/* 5 */
+data eu_occ_total;
+set HW3.eu_occ;
+Year = substr(YearMon,1,4);
+Month = substr(YearMon,6);
+ReportDate = mdy(Month, 1, Year);
+Total = sum(Hotel, ShortStay, Camp);
+format Hotel ShortStay Camp Total comma17.;
+format ReportDate monyy7.;
+keep Country Hotel ShortStay Camp ReportDate Total;
+run;
+
+/* 6 */
+/* The value of ReportDate in row 1 is SEP2017 */
+
+/* 1 */
+data park_type;
+set HW3.np_summary;
+run;
+
+/* 2 */
+data park_type;
+set HW3.np_summary;
+if Type='NP' then ParkType='Park';
+else if Type='NM' then ParkType='Monument';
+else if Type='NPRE' or Type='PRE' or Type='PRESERVE' then ParkType='Preserve';
+else if Type='NS' then ParkType='SeaShore';
+else if Type='RVR' or Type='RIVERWAYS' then ParkType='River';
+run;
+
+/* 3 */
+data park_type;
+set HW3.np_summary;
+length ParkType $10.;
+if Type='NP' then ParkType='Park';
+else if Type='NM' then ParkType='Monument';
+else if Type='NPRE' or Type='PRE' or Type='PRESERVE' then ParkType='Preserve';
+else if Type='NS' then ParkType='SeaShore';
+else if Type='RVR' or Type='RIVERWAYS' then ParkType='River';
+run;
+
+/* 4 */
+proc freq data=park_type;
+tables ParkType;
+run;
+
+/* 5 */
+/*The frequency of seashore is 10  */
+
+/* 1 */
+data Parks Monuments;
+set HW3.NP_summary;
+where Type='NP' or Type='NM';
+run;
+
+/* 2 */
+data Parks Monuments;
+set HW3.NP_summary;
+where Type='NP' or Type='NM';
+Campers = sum(OtherCamping, TentCampers, RVCampers, BackcountryCampers);
+run;
+
+/* 3 */
+data Parks Monuments;
+set HW3.NP_summary;
+where Type='NP' or Type='NM';
+Campers = sum(OtherCamping, TentCampers, RVCampers, BackcountryCampers);
+if Type='NP' then do ParkType='Park'; 
+output Parks;
+end;
+else if Type='NM' then do ParkType='Monument';
+output Monuments;
+end;
+run;
+
+/* 4 */
+data Parks Monuments;
+set HW3.NP_summary;
+where Type='NP' or Type='NM';
+length ParkType $15.;
+Campers = sum(OtherCamping, TentCampers, RVCampers, BackcountryCampers);
+if Type='NP' then do ParkType='Park'; 
+output Parks;
+end;
+else if Type='NM' then do ParkType='Monument';
+output Monuments;
+end;
+run;
+
+/* 5 */
+data Parks Monuments;
+set HW3.NP_summary;
+where Type='NP' or Type='NM';
+length ParkType $15.;
+Campers = sum(OtherCamping, TentCampers, RVCampers, BackcountryCampers);
+if Type='NP' then do ParkType='Park'; 
+output Parks;
+end;
+else if Type='NM' then do ParkType='Monument';
+output Monuments;
+end;
+keep Reg Type ParkName DayVisits OtherLodging Campers ParkType;
+run;
+
+/* 6 */
+/* There are 51 rows in the parks data set and 63 rows in the monuments data set */
+
+/* 1 */
+data Parks Monuments;
+set HW3.NP_summary;
+where Type='NP' or Type='NM';
+run;
+
+/* 2 */
+data Parks Monuments;
+set HW3.NP_summary;
+where Type='NP' or Type='NM';
+Campers = sum(OtherCamping, TentCampers, RVCampers, BackcountryCampers);
+run;
+
+/* 3 */
+data Parks Monuments;
+set HW3.NP_summary;
+where Type='NP' or Type='NM';
+Campers = sum(OtherCamping, TentCampers, RVCampers, BackcountryCampers);
+if Type='NP' then do ParkType='Park'; 
+output Parks;
+end;
+else if Type='NM' then do ParkType='Monument';
+output Monuments;
+end;
+run;
+
+/* 4 */
+data Parks Monuments;
+set HW3.NP_summary;
+where Type='NP' or Type='NM';
+length ParkType $15.;
+Campers = sum(OtherCamping, TentCampers, RVCampers, BackcountryCampers);
+if Type='NP' then do ParkType='Park'; 
+output Parks;
+end;
+else if Type='NM' then do ParkType='Monument';
+output Monuments;
+end;
+run;
+
+/* 5 */
+data Parks Monuments;
+set HW3.NP_summary;
+where Type='NP' or Type='NM';
+length ParkType $15.;
+Campers = sum(OtherCamping, TentCampers, RVCampers, BackcountryCampers);
+if Type='NP' then do ParkType='Park'; 
+output Parks;
+end;
+else if Type='NM' then do ParkType='Monument';
+output Monuments;
+end;
+keep Reg Type ParkName DayVisits OtherLodging Campers ParkType;
+run;
+
+/* 6 */
+/* There are 51 rows in the parks data set and 63 rows in the monuments data set */
+
+data np_parks;
+	set hw4.np_final (obs=5);
+	putlog "NOTE: START DATA STEP ITERATION";
+	keep Region ParkName AvgMonthlyVisitors Acres Size;
+    where Type="PARK";
+    length Size $6;
+	format AvgMonthlyVisitors Acres comma10.;
+    Type=propcase(Type);
+    putlog Type=;
+	AvgMonthlyVisitors=sum(DayVisits,Campers,OtherLodging)/12;
+	if Acres<1000 then Size="Small";
+	else if Acres<100000 then Size="Medium";
+	else Size="Large";
+	putlog _all_;
+run;
+
+/* a  */
+/* The data, keep, where, and format statements are all compile only */
+
+/* b */
+/* The length of size will be 5 */
+
+data monument(drop=Parktype) park(drop=ParkType) other;
+set hw4.np_yearlytraffic;
+drop Region;
+if ParkType="National Monument" then output monument;
+else if ParkType= "National Park" then output park;
+else output other;
+run;
+
+/* 4 */
+/* There are 48 rows in the other table */
+
+
+data camping(keep=CampTotal ParkName Month DayVisits) lodging(keep=LodgingOther ParkName Month DayVisits);
+set hw4.np_2017;
+CampTotal=sum(CampingOther, CampingTent, CampingRV, CampingBackcountry);
+format CampTotal comma17.;
+if CampTotal > 0 then output camping;
+if LodgingOther > 0 then output lodging;
+run;
+
+/* There is 1374 in the camping table and 383 in the lodging table */
+
+data TotalTraffic;
+set hw4.np_yearlytraffic;
+totTraffic + count;
+format totTraffic comma15.;
+run;
+
+data ParkTypeTraffic;
+set hw4.np_yearlytraffic;
+where Parktype="National Monument" or "National Park";
+if ParkType="National Monument" then MonumentTraffic + Count;
+else ParkTraffic + Count;
+format MonumentTraffic ParkTraffic comma15.;
+run;
+
+title "Accumulating Traffic Totals for Park Types";
+proc print data=ParkTypeTraffic;
+var ParkType ParkName Location Count MonumentTraffic ParkTraffic;
+run;
+
+proc sort data=hw4.np_yearlytraffic 
+out=sortedtraffic(keep=ParkType ParkName Location Count);
+by Parktype ParkName;
+run;
+
+data TypeTraffic;
+set sortedtraffic;
+by ParkType;
+if first.ParkType=1 then TypeCount=0;
+TypeCount + Count;
+format TypeCount comma12.;
+if last.ParkType=1;
+keep Parktype TypeCount;
+run;
+
+proc sort data=sashelp.shoes out=shoes_sorted;
+by Region Product;
+run;
+
+data ProfitSummary;
+set shoes_sorted;
+Profit = Sales - Returns;
+by Region Product;
+if first.product=1 then totalprofit=0;
+totalprofit + Profit;
+if last.product=1;
+keep Region Product totalprofit;
+format totalprofit dollar12.;
+run;
+
+%let path = /home/u62640447/my_shared_file_links/u61801247/data;
+libname hw5 "&path";
+
+/* 1  */
+proc print data = hw5.np_lodging (obs = 10);
+	where CL2010 > 0;
+run;
+
+/* 2)  */
+data stays;
+	set hw5.np_lodging;
+	Stay1 = largest(1, of CL:);
+	Stay2 = largest(2, of CL:);
+	Stay3 = largest(3, of CL:);
+	StayAvg = round(mean(of CL:));
+	if StayAvg > 0;
+	format Stay: comma8.; 
+	keep Park Stay:;
+run;
+
+/*There is 44 rows in stays  */
+
+data rainsummary;
+	set hw5.np_hourlyrain;
+	by Month;
+	if first.month = 1 then MonthlyRainTotal = 0;
+	MonthlyRainTotal + rain;
+	if last.month = 1;
+	date = datepart(DateTime);
+	monthend = intnx('month',date, 0,'e');
+	format date monthend date9.;
+	keep StationName MonthlyRainTotal Date MonthEnd;
+run;
+
+/* The rainsummary table has 12 rows */
+
+data clean_traffic;
+	set hw5.np_monthlytraffic;
+	length Type $ 5;
+	Type = scan(ParkName, -1);
+	Region = compress(upcase(Region));
+	Location = propcase(Location);
+	drop Year;
+run;
+
+%let path=/home/u62640447/my_shared_file_links/u61801247/data;
+libname hw6 "&path";
+run;
+
+proc format;
+value $HIGHREG "IM"="Intermountain"
+				"PW"="Pacific West"
+				"SE"="Southeast"
+				other="All Other Regions";
+run;
+
+title 'High Frequency Regions';
+proc freq data=hw6.np_summary order=freq;
+    tables Reg;
+    label Reg='Region';
+    format Reg $HIGHREG.;
+run;
+title;
+
+proc format;
+value psize low -< 10000 = "small"
+			10000 -< 500000 = "Average"
+			500000 - high = "Large";
+run;
+
+data np_parksize;
+set hw6.np_acres;
+ParkSize=put(GrossAcres, psize.);
+run;
+
+proc freq data=np_parksize;
+table parksize;
+run;
+
+data type_lookup;
+retain FmtName '$TypeFmt';
+set hw6.np_Codelookup(rename=(ParkCode=Start Type=Label));
+keep FmtName Start Label;
+run;
+
+proc format cntlin=type_lookup;
+run;
+
+data park;
+set hw6.np_monthlytraffic;
+format ParkCode $TypeFmt.;
+run;
+
+data retirement;
+do year = 1 to 6;
+invest + 1000;
+output;
+end;
+run;
+
+/*There is 6 rows in the table  */
+
+data retirement;
+	do year = 1 to 6;
+		invest + 1000;
+			do Quarter = 1 to 4;
+			Invest+(Invest*(.075/4));
+			end;
+		output;
+	end;
+run;
+
+data retirement;
+	do year = 1 to 6;
+		invest + 1000;
+			do Quarter = 1 to 4;
+			Invest+(Invest*(.075/4));
+			output;
+			end;
+	end;
+run;
+/* there is 24 rows */
+
+data IncreaseDayVisits;
+	set hw6.np_summary;
+	where Reg= 'NE' and DayVisits < 100000;
+	IncrDayVisits = DayVisits;
+	do until (IncDayVisits > 100000);
+		Year + 1;
+		IncrDayVisits = IncrDayVisits * 1.06;
+		output;
+	end;
+	format IncrDayVisits comma12.;
+run;
+
+data IncreaseDayVisits;
+	set hw6.np_summary;
+	where Reg= 'NE' and DayVisits < 100000;
+	IncrDayVisits = DayVisits;
+	do i=1 to 12 while (IncDayVisits > 100000);
+		Year + 1;
+		IncrDayVisits = IncrDayVisits * 1.06;
+		output;
+	end;
+	format IncrDayVisits comma12.;
+run;
+
+%let path=/home/u62640447/my_shared_file_links/u61801247/data;
+libname hw7 "&path";
+
+data camping_narrow;
+	set hw7.np_2017camping;
+	length CampType $ 11;
+	CampType = 'Tent';
+	CampCount = Tent;
+	output;
+	CampType = 'RV';
+	CampCount = RV;
+	output;
+	CampType = 'Backcountry';
+	CampCount = Backcountry;
+	output;
+	drop Tent RV Backcountry;
+run;
+
+/* There is 381 rows */
+
+proc print data=hw7.np_2016camping(obs=10);
+run;
+
+data Camping_Wide;
+	set hw7.np_2016camping;
+	by ParkName;
+	retain ParkNameTent RV BackCountry;
+	if CampType="Tent" then Tent = CampCount;
+		else if CampType= "RV" then RV = CampCount;
+		else BackCountry = CampCount;
+	if last.ParkName = 1;
+	keep ParkName Tent RV BackCountry;
+	format Tent RV BackCountry comma8.;
+run;
+
+/*There is 126 rows  */
+
+proc print data=hw7.np_2017camping(obs=10);
+run;
+
+proc transpose data=hw7.np_2017camping out=np_2017camping_t(rename = (col1=Count))
+				name = Location;
+	by ParkName;
+	var Tent RV;
+run;
+
+/* There is 254 rows */
+
+proc print data=hw7.np_2016camping(obs=10);
+run;
+
+proc transpose data=hw7.np_2016camping out=np_2016camping(drop = _name_);
+	by ParkName;
+	id CampType;
+run;
+
+/* There is 126 rows */
+
+data np_combine;
+	set hw7.np_2014 hw7.np_2015 (rename = (Parkcode=Park ParkType=Type));
+	where Month in (6,7,8) and Type = "National Park";
+	CampTotal = sum(of Camping:);
+	drop Camping:;
+	format CampTotal comma20.;
+run;
+
+proc sort data=np_combine;
+	by Type Park Year Month;
+run;
+
+proc sort data=hw7.np_codelookup out=SortedCodes;
+	by ParkCode;
+run;
+
+proc sort data = hw7.np_2016 out=Sorted_Code_2016;
+	by ParkCode;
+run;
+
+data ParkStats (keep = ParkCode ParkName Year Month DayVisits) 
+ParkOther (keep = ParkCode ParkName);
+	merge SortedCodes Sorted_Code_2016 (in = inStats);
+	by ParkCode;
+	if inStats = 1 then output ParkStats;
+	else output ParkOther;
+run;
+
+%let path = /home/u62640447/my_shared_file_links/u61801247/data;
+libname hw8 "&path";
+
+title "Categories of Reported Species";
+
+proc freq data = hw8.np_species order=freq;
+	table category / nocum;
+run;
+
+
+ods graphics on;
+ods noproctitle;
+
+title1 "Categories of Reported Species";
+
+title2 "In the Everglades";
+
+proc freq data = hw8.np_species order=freq;
+	table category / nocum plots=freqplot;
+	where Species_ID like "EVER%" and  Category ne "Vascular Plant";
+run;
+
+title;
+
+title1 "Park Types by Region";
+
+proc freq data= hw8.np_codelookup order = freq;
+	tables type * region / nocol;
+	where type not like '%Other%';
+run;
+
+title;
+
+title2 "Selected Park Types by Region";
+
+proc freq data= hw8.np_codelookup order = freq;
+	tables type * region / nocol crosslist
+	plots=freqplot(groupby=row scale=grouppercent orient=horizontal);
+	where type in ("National Historic Site", "National Monument", "National Park");
+run;
+
+title "Weather Statistics by Year and Park";
+
+proc means data=hw8.np_westweather mean min max maxdec=2;
+	var Precip Snow TempMin TempMax;
+	class Year Name;
+run;
+
+proc means data= hw8.np_westweather;
+	where Precip ne 0;
+	var Precip;
+	class Name Year;
+	ways 2;
+	output out=rainstats n=RainDays sum=TotalRain;
+run;
+
+title "Rain Statistics by Year and Park";
+
+proc print data= rainstats noobs label;
+	var Name Year RainDays TotalRain;
+	label Name='Park Name'
+	RainDays='Number of Days Raining'
+	TotalRain='Total Rain Amount (In Inches)';
+run;
+
+
+title;
+
+%let outpath=/home/u62640447/STA6033/Output;
+
+ods excel file = "&outpath/StormStats.xlsx"
+	style=snow
+	options(sheet_name='South Pacific Summary');
+	
+ods noproctitle;
+title;
+
+proc means data=hw8.storm_detail maxdec=0 median max;
+    class Season;
+    var Wind;
+    where Basin='SP' and Season in (2014,2015,2016);
+run;
+
+
+ods excel  options(sheet_name='Detail');
+
+proc print data=hw8.storm_detail noobs;
+    where Basin='SP' and Season in (2014,2015,2016);
+    by Season;
+run;
+
+ods excel close;
+ods proctitle;
+
+ods rtf file = "&outpath/ParkReport.rtf"
+	style=journal
+	startpage=no;
+
+ods noproctitle;
+
+options nodate;
+
+title "US National Park Regional Usage Summary";
+
+proc freq data=hw8.np_final;
+    tables Region /nocum;
+run;
+
+proc means data=hw8.np_final mean median max nonobs maxdec=0;
+    class Region;
+    var DayVisits Campers;
+run;
+
+ods rtf style=sasdocprinter;
+
+title2 'Day Visits vs. Camping';
+proc sgplot data=hw8.np_final;
+    vbar  Region / response=DayVisits;
+    vline Region / response=Campers ;
+run;
+title;
+
+ods rtf close;
+
+options date;
